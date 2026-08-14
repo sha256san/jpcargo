@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 #  jpcargo 高速インストーラー（事前ビルド済みバイナリ直接ダウンロード）
-#  コンパイル不要でわずか数秒でインストールできます
+#  GitHub Actions でコンパイルされたバイナリを直接ダウンロードして即座に配置します
 #
 #  使い方:
 #    curl -fsSL https://raw.githubusercontent.com/sha256san/jpcargo/main/install.sh | bash
@@ -21,7 +21,7 @@ REPO="sha256san/jpcargo"
 INSTALL_DIR="${CARGO_HOME:-$HOME/.cargo}/bin"
 
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BOLD} 🦀 jpcargo 高速インストーラー（コンパイル不要）${NC}"
+echo -e "${BOLD} 🦀 jpcargo 高速インストーラー（GitHub Actions 事前ビルドバイナリ）${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -37,7 +37,6 @@ case "$OS" in
         OS_TARGET="apple-darwin"
         ;;
     *)
-        echo -e "${YELLOW}未対応のOSです: $OS${NC}"
         OS_TARGET=""
         ;;
 esac
@@ -50,44 +49,46 @@ case "$ARCH" in
         ARCH_TARGET="aarch64"
         ;;
     *)
-        echo -e "${YELLOW}未対応のアーキテクチャです: $ARCH${NC}"
         ARCH_TARGET=""
         ;;
 esac
 
 mkdir -p "$INSTALL_DIR"
-
 INSTALLED=false
 
-# 2. 事前ビルド済みバイナリのダウンロード試行
+# 2. 事前ビルド済みバイナリのダウンロード試行 (GitHub Releases)
 if [ -n "$OS_TARGET" ] && [ -n "$ARCH_TARGET" ]; then
     TARGET="${ARCH_TARGET}-${OS_TARGET}"
     ARCHIVE_NAME="jpcargo-${TARGET}.tar.gz"
     DOWNLOAD_URL="https://github.com/${REPO}/releases/latest/download/${ARCHIVE_NAME}"
 
     echo -e "  検出環境: ${BOLD}${TARGET}${NC}"
-    echo -n "  ▶ 事前ビルド済みバイナリをダウンロード中... "
+    echo -n "  ▶ GitHub Releases からバイナリをダウンロード中... "
 
     TMP_DIR="$(mktemp -d)"
     trap 'rm -rf "$TMP_DIR"' EXIT
 
-    if curl -fsSL "$DOWNLOAD_URL" -o "$TMP_DIR/$ARCHIVE_NAME" 2>/dev/null; then
-        tar -xzf "$TMP_DIR/$ARCHIVE_NAME" -C "$TMP_DIR"
-        if [ -f "$TMP_DIR/jpcargo" ]; then
-            mv "$TMP_DIR/jpcargo" "$INSTALL_DIR/jpcargo"
-            chmod +x "$INSTALL_DIR/jpcargo"
-            echo -e "${GREEN}完了 (コンパイル不要で即座にインストール)${NC}"
-            INSTALLED=true
+    # ダウンロード試行（HTTPステータスを確認してエラー時はフォールバック）
+    if curl -fL -sS "$DOWNLOAD_URL" -o "$TMP_DIR/$ARCHIVE_NAME" 2>/dev/null; then
+        if tar -xzf "$TMP_DIR/$ARCHIVE_NAME" -C "$TMP_DIR" 2>/dev/null; then
+            if [ -f "$TMP_DIR/jpcargo" ]; then
+                mv "$TMP_DIR/jpcargo" "$INSTALL_DIR/jpcargo"
+                chmod +x "$INSTALL_DIR/jpcargo"
+                echo -e "${GREEN}完了 ⚡ (コンパイル不要で即座にインストール)${NC}"
+                INSTALLED=true
+            fi
         fi
-    else
-        echo -e "${YELLOW}事前ビルドバイナリの取得をスキップ（ローカルビルドに切り替えます）${NC}"
+    fi
+
+    if [ "$INSTALLED" = false ]; then
+        echo -e "${YELLOW}スキップ (Releaseバイナリが見つからないためローカルビルドを実行します)${NC}"
     fi
 fi
 
-# 3. 事前ビルドが失敗した場合のフォールバック (cargo install)
+# 3. 事前ビルドが取得できなかった場合のフォールバック (cargo install)
 if [ "$INSTALLED" = false ]; then
     echo ""
-    echo -e "  ${YELLOW}▶${NC} ${BOLD}ソースコードから直接 cargo install を実行中...${NC}"
+    echo -e "  ${YELLOW}▶${NC} ${BOLD}ソースコードから cargo install を実行中...${NC}"
     
     if ! command -v cargo >/dev/null 2>&1; then
         echo -e "${RED}エラー: cargo が見つかりません。Rust をインストールしてください: https://rustup.rs/${NC}"
