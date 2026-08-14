@@ -5,7 +5,7 @@ use crate::japanese::JapaneseLevel;
 #[command(
     name = "jpcargo",
     author = "jpcargo team",
-    version = "0.1.0",
+    version = env!("CARGO_PKG_VERSION"),
     about = "Rust日本語診断Cargoラッパー - コンパイルエラーを分かりやすい日本語で診断・解説します",
     long_about = "jpcargo は、Cargo および rustc の出力を解析し、Rust コンパイラのエラーを親切な日本語診断・解説・修正案に変換して表示する CLI ツールです。"
 )]
