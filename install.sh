@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # ==============================================================================
-#  jpcargo インストーラースクリプト
+#  jpcargo ワンライナー インストーラースクリプト
 #  Rust コンパイラエラー日本語診断ツール (jpcargo) の自動インストール
+#
+#  使い方:
+#    curl -fsSL https://raw.githubusercontent.com/sha256san/jpcargo/main/install.sh | bash
 # ==============================================================================
 
 set -e
@@ -30,23 +33,39 @@ if ! command -v cargo >/dev/null 2>&1; then
 fi
 echo -e "${GREEN}OK${NC} ($(cargo --version))"
 
-# 2. ビルド＆インストール実行
-echo ""
-echo -e "  ${YELLOW}▶${NC} ${BOLD}jpcargo をビルドして ~/.cargo/bin にインストール中...${NC}"
-
-# スクリプトがあるディレクトリを基準にインストール
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
-
-if cargo install --path . --force; then
-    echo ""
-    echo -e "  ${GREEN}✅ インストールが正常に完了しました！${NC}"
-else
-    echo -e "  ${RED}❌ インストールに失敗しました。${NC}"
+# 2. git の存在確認
+if ! command -v git >/dev/null 2>&1; then
+    echo -e "${RED}エラー: git がインストールされていません。git をインストールしてください。${NC}"
     exit 1
 fi
 
-# 3. PATH の確認
+# 3. インストール元判定（ローカルリポジトリ内か、curl パイプ実行か）
+echo ""
+echo -e "  ${YELLOW}▶${NC} ${BOLD}jpcargo をビルドして ~/.cargo/bin にインストール中...${NC}"
+
+# スクリプト自身のディレクトリに Cargo.toml があるか判定
+SCRIPT_DIR=""
+if [ -n "${BASH_SOURCE[0]}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+
+if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/Cargo.toml" ] && [ -d "$SCRIPT_DIR/src" ]; then
+    # ローカルリポジトリから実行
+    cd "$SCRIPT_DIR"
+    cargo install --path . --force
+else
+    # curl | bash 等によるリモートパイプ実行
+    TMP_DIR="$(mktemp -d)"
+    trap 'rm -rf "$TMP_DIR"' EXIT
+    git clone --depth 1 https://github.com/sha256san/jpcargo.git "$TMP_DIR"
+    cd "$TMP_DIR"
+    cargo install --path . --force
+fi
+
+echo ""
+echo -e "  ${GREEN}✅ インストールが正常に完了しました！${NC}"
+
+# 4. PATH の確認
 CARGO_BIN="$HOME/.cargo/bin"
 if [[ ":$PATH:" != *":$CARGO_BIN:"* ]]; then
     echo ""
@@ -55,7 +74,7 @@ if [[ ":$PATH:" != *":$CARGO_BIN:"* ]]; then
     echo -e "    ${CYAN}export PATH=\"\$HOME/.cargo/bin:\$PATH\"${NC}"
 fi
 
-# 4. 完了案内と doctor 実行
+# 5. 完了案内
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BOLD} 🎉 準備完了！ 以下のコマンドを試してみましょう:${NC}"

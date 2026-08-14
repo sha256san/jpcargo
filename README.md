@@ -98,13 +98,15 @@ jpcargo --level beginner check
 
 ## 🚀 インストール方法
 
-### 方法 1: リポジトリから自動インストール（推奨）
+### 方法 1: `curl` ワンライナー（最速・推奨）
+
+ターミナルで以下のコマンドを実行するだけで、自動的にダウンロード・ビルド・インストールが完了します:
 
 ```bash
-git clone https://github.com/sha256san/jpcargo.git
-cd jpcargo
-./install.sh
+curl -fsSL https://raw.githubusercontent.com/sha256san/jpcargo/main/install.sh | bash
 ```
+
+---
 
 ### 方法 2: `cargo install` で直接インストール
 
@@ -112,16 +114,20 @@ cd jpcargo
 cargo install --git https://github.com/sha256san/jpcargo.git
 ```
 
-### 方法 3: ローカルソースからビルド・インストール
+---
+
+### 方法 3: リポジトリから手動ビルド・インストール
 
 ```bash
 git clone https://github.com/sha256san/jpcargo.git
 cd jpcargo
-cargo install --path .
+./install.sh
 ```
 
 > **Note**: `~/.cargo/bin` に PATH が通っていることを確認してください。
-> `export PATH="$HOME/.cargo/bin:$PATH"`
+> ```bash
+> export PATH="$HOME/.cargo/bin:$PATH"
+> ```
 
 ---
 
