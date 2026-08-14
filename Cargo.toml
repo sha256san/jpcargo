@@ -1,6 +1,6 @@
 [package]
 name = "jpcargo"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = ["jpcargo team"]
 description = "Rust Japanese Diagnostic Cargo Wrapper - Rustコンパイラのエラーを分かりやすい日本語で診断するCargoラッパー"

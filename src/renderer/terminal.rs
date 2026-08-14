@@ -117,6 +117,16 @@ impl TerminalRenderer {
             }
         }
 
+        // エラーコード詳細コマンドの案内
+        if jd.code.starts_with('E') && jd.code.len() == 5 {
+            println!(
+                "  {} エラーコード詳細: {}",
+                "ℹ️".bright_blue(),
+                format!("jpcargo explain {}", jd.code).bright_cyan().bold()
+            );
+            println!();
+        }
+
         // 原文表示（--original または 未対応エラー時）
         if self.show_original {
             if let Some(orig) = &jd.original_message {
