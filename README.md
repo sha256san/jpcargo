@@ -98,15 +98,30 @@ jpcargo --level beginner check
 
 ## 🚀 インストール方法
 
-### 方法 1: `curl` ワンライナー（コンパイル不要・最速・推奨 ⚡）
+### 方法 1: `curl` ワンライナー（コンパイル不要・最速 1秒 ⚡）
 
-ターミナルで以下のコマンドを実行するだけで、**お使いのPCでコンパイルすることなく**、事前ビルド済みバイナリを直接ダウンロードして **わずか 1 秒** でインストールが完了します:
+ターミナルで以下のコマンドを実行するだけで、**お使いのPCでコンパイルすることなく**、GitHub Actions で事前ビルドされたバイナリを直接ダウンロードして **わずか 1 秒** でインストールが完了します:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/sha256san/jpcargo/main/install.sh | bash
 ```
 
-> **対応環境**: Linux (x86_64, aarch64), macOS (Intel, Apple Silicon)
+> **Note**: キャッシュをバイパスして最新版を確実に取得したい場合はこちら:
+> ```bash
+> curl -fsSL "https://raw.githubusercontent.com/sha256san/jpcargo/main/install.sh?v=$(date +%s)" | bash
+> ```
+
+---
+
+### またはバイナリを直接 1行で配置（最速）
+
+```bash
+# Linux (x86_64)
+curl -fsSL https://github.com/sha256san/jpcargo/releases/latest/download/jpcargo-x86_64-unknown-linux-gnu.tar.gz | tar -xz -C ~/.cargo/bin
+
+# macOS (Apple Silicon / M1, M2, M3)
+curl -fsSL https://github.com/sha256san/jpcargo/releases/latest/download/jpcargo-aarch64-apple-darwin.tar.gz | tar -xz -C ~/.cargo/bin
+```
 
 ---
 
