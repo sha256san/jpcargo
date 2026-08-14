@@ -71,6 +71,7 @@ impl CargoRunner {
                 let reader = BufReader::new(stdout);
                 let mut errs = 0;
                 let mut warns = 0;
+                let mut collected_diags = Vec::new();
 
                 for line_res in reader.lines() {
                     if let Ok(line) = line_res {
@@ -80,10 +81,12 @@ impl CargoRunner {
                                     errs += 1;
                                     let jd = translator.translate(&message);
                                     renderer.render(&jd);
+                                    collected_diags.push(jd);
                                 } else if message.level == "warning" && !renderer.quiet {
                                     warns += 1;
                                     let jd = translator.translate(&message);
                                     renderer.render(&jd);
+                                    collected_diags.push(jd);
                                 }
                             }
                         } else {
@@ -92,6 +95,12 @@ impl CargoRunner {
                         }
                     }
                 }
+
+                // すべてのエラー・警告の表示後にサマリー一覧テーブルを表示
+                if !collected_diags.is_empty() {
+                    renderer.render_summary_table(&collected_diags);
+                }
+
                 (errs, warns)
             }
         });

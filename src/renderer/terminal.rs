@@ -139,4 +139,51 @@ impl TerminalRenderer {
         println!("{}", bar.color(header_color));
         println!();
     }
+
+    pub fn render_summary_table(&self, diagnostics: &[JapaneseDiagnostic]) {
+        if diagnostics.is_empty() {
+            return;
+        }
+
+        let total_errors = diagnostics.iter().filter(|d| d.level == "error").count();
+        let total_warnings = diagnostics.iter().filter(|d| d.level == "warning").count();
+
+        let bar = "━".repeat(78);
+        println!();
+        println!("{}", bar.bright_cyan());
+        println!(
+            "{} (エラー: {} 件, 警告: {} 件)",
+            " 📋 診断サマリー一覧".bold().bright_white(),
+            total_errors.to_string().bright_red().bold(),
+            total_warnings.to_string().yellow().bold()
+        );
+        println!("{}", bar.bright_cyan());
+
+        for (idx, jd) in diagnostics.iter().enumerate() {
+            let num = idx + 1;
+            let is_warning = jd.level == "warning";
+            let type_str = if is_warning {
+                "警告".yellow().bold()
+            } else {
+                "エラー".bright_red().bold()
+            };
+
+            let loc = jd.location.as_deref().unwrap_or("-");
+            let code = jd.code.as_str().bright_cyan().bold();
+            let title = &jd.title;
+
+            // ユーザー指定のフォーマット: 1|src/main.rs:19:5|エラー|E0502|タイトル
+            println!(
+                " {:2} | {:<22} | {:<4} | {:<18} | {}",
+                num,
+                loc.underline(),
+                type_str,
+                code,
+                title
+            );
+        }
+
+        println!("{}", bar.bright_cyan());
+        println!();
+    }
 }

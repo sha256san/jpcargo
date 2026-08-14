@@ -47,15 +47,20 @@ impl RustcRunner {
 
         let stderr_handle = std::thread::spawn(move || {
             let reader = BufReader::new(stderr);
+            let mut collected = Vec::new();
             for line_res in reader.lines() {
                 if let Ok(line) = line_res {
                     if let Ok(diag) = serde_json::from_str::<Diagnostic>(&line) {
                         let jd = translator.translate(&diag);
                         renderer.render(&jd);
+                        collected.push(jd);
                     } else if !line.trim().is_empty() {
                         eprintln!("{}", line);
                     }
                 }
+            }
+            if !collected.is_empty() {
+                renderer.render_summary_table(&collected);
             }
         });
 
