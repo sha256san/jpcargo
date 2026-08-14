@@ -517,6 +517,18 @@ pub mod e0804;
 pub mod e0805;
 pub mod e0806;
 
+// 主要 Lint / 警告ルール
+pub mod unused_assignments;
+pub mod unused_variables;
+pub mod unused_mut;
+pub mod dead_code;
+pub mod unused_imports;
+pub mod unused_must_use;
+pub mod non_snake_case;
+pub mod non_camel_case_types;
+pub mod unreachable_code;
+pub mod unreachable_patterns;
+
 use crate::diagnostic::{Diagnostic, ErrorCategory};
 use crate::japanese::template::JapaneseDiagnostic;
 
@@ -530,6 +542,18 @@ pub trait DiagnosticRule: Send + Sync {
 
 pub fn all_rules() -> Vec<Box<dyn DiagnosticRule>> {
     vec![
+        // Lint / 警告ルール
+        Box::new(unused_assignments::UnusedAssignments),
+        Box::new(unused_variables::UnusedVariables),
+        Box::new(unused_mut::UnusedMut),
+        Box::new(dead_code::DeadCode),
+        Box::new(unused_imports::UnusedImports),
+        Box::new(unused_must_use::UnusedMustUse),
+        Box::new(non_snake_case::NonSnakeCase),
+        Box::new(non_camel_case_types::NonCamelCaseTypes),
+        Box::new(unreachable_code::UnreachableCode),
+        Box::new(unreachable_patterns::UnreachablePatterns),
+
         Box::new(e0001::E0001),
         Box::new(e0002::E0002),
         Box::new(e0004::E0004),

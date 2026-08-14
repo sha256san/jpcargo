@@ -23,6 +23,8 @@ pub enum ErrorCategory {
     Feature,
     Memory,
     Generic,
+    Lint,
+    Style,
     Other,
 }
 
@@ -50,6 +52,8 @@ impl ErrorCategory {
             ErrorCategory::Feature => "機能フラグ (Feature)",
             ErrorCategory::Memory => "メモリ・ライフサイクル (Memory/Drop)",
             ErrorCategory::Generic => "ジェネリクス (Generic)",
+            ErrorCategory::Lint => "未使用・コード品質 (Lint)",
+            ErrorCategory::Style => "命名規約・スタイル (Style)",
             ErrorCategory::Other => "その他 (Other)",
         }
     }
@@ -78,8 +82,15 @@ pub fn classify(code: &str) -> ErrorCategory {
         "E0040" => ErrorCategory::Memory,
         "E0659" => ErrorCategory::Macro,
         "E0658" => ErrorCategory::Feature,
+        "unused_assignments" | "unused_variables" | "unused_mut" | "dead_code" | "unused_imports"
+        | "unused_must_use" | "unused_parens" | "unused_doc_comments" | "unused_comparisons"
+        | "redundant_semicolons" | "unreachable_code" | "unreachable_patterns" | "while_true"
+        | "bare_trait_objects" | "deprecated" => ErrorCategory::Lint,
+        "non_snake_case" | "non_camel_case_types" | "non_upper_case_globals" => ErrorCategory::Style,
         _ => {
-            if let Some(entry) = crate::japanese::database::find_db_entry(code) {
+            if code.starts_with("clippy::") || code.starts_with("unused_") {
+                ErrorCategory::Lint
+            } else if let Some(entry) = crate::japanese::database::find_db_entry(code) {
                 entry.category
             } else {
                 ErrorCategory::Other

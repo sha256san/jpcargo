@@ -28,8 +28,13 @@ impl Translator {
     }
 
     pub fn explain_code(&self, code: &str) -> Option<JapaneseDiagnostic> {
-        let normalized = code.to_uppercase();
-        self.rules.get(normalized.as_str()).map(|r| r.general_explanation())
+        let upper = code.to_uppercase();
+        let lower = code.to_lowercase();
+        self.rules
+            .get(code)
+            .or_else(|| self.rules.get(upper.as_str()))
+            .or_else(|| self.rules.get(lower.as_str()))
+            .map(|r| r.general_explanation())
     }
 
     fn fallback(&self, diag: &Diagnostic) -> JapaneseDiagnostic {
@@ -40,19 +45,21 @@ impl Translator {
             .unwrap_or_else(|| "UNKNOWN".to_string());
 
         let category = classify(&code);
-        let title = if diag.level == "warning" {
-            "コンパイラ警告 (Warning)"
+        let (title, summary, reason, solution) = if diag.level == "warning" {
+            (
+                "コンパイラ警告 (Warning)",
+                format!("警告内容: {}\n（Lint 識別子: `{}`）", diag.message, code),
+                "コンパイラまたは Clippy によるコード品質・スタイル・安全性の推奨事項です。",
+                "上記の警告メッセージおよびコンパイラのヒント（help/note）に従って、該当箇所のコードを修正してください。",
+            )
         } else {
-            "コンパイラエラー (Error)"
+            (
+                "コンパイラエラー (Error)",
+                format!("エラーメッセージ: {}\n（エラー識別子: `{}`）", diag.message, code),
+                "rustc コンパイラが出力した診断情報（原文）に基づき表示しています。",
+                "上記のエラーメッセージおよびコンパイラのヒント（help/note）を参照してコードを修正してください。",
+            )
         };
-
-        let summary = format!(
-            "エラーメッセージ: {}\n※ このエラーコード（{}）の詳細な日本語解説はまだ登録されていません。",
-            diag.message, code
-        );
-
-        let reason = "rustc コンパイラが出力した診断情報（原文）をそのまま表示しています。";
-        let solution = "上記のエラーメッセージおよびコンパイラのヒント（help/note）を参照してコードを修正してください。";
 
         let mut jd = JapaneseDiagnostic::new(
             code,

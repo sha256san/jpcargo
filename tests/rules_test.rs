@@ -30,11 +30,25 @@ fn test_jpcargo_cli_stats() {
 
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("対応エラー総数: 518 件"));
+    assert!(stdout.contains("対応エラー総数: 528 件"));
     assert!(stdout.contains("所有権 (Ownership)"));
     assert!(stdout.contains("借用 (Borrow)"));
     assert!(stdout.contains("トレイト (Trait)"));
     assert!(stdout.contains("可変性 (Mutability)"));
+    assert!(stdout.contains("未使用・コード品質 (Lint)"));
+}
+
+#[test]
+fn test_jpcargo_cli_explain_unused_assignments() {
+    let output = Command::new("cargo")
+        .args(&["run", "--", "explain", "unused_assignments"])
+        .output()
+        .expect("Failed to execute jpcargo explain unused_assignments");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("unused_assignments"));
+    assert!(stdout.contains("代入された値"));
 }
 
 #[test]
