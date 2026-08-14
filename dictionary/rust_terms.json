@@ -1,0 +1,99 @@
+{
+  "terms": [
+    {
+      "english": "mutable",
+      "japanese": "ミュータブル（可変 / 変更可能）",
+      "explanation": "値や変数を後から変更できる状態。Rustでは変数はデフォルトで不変（イミュータブル）のため、`let mut` で明示する必要があります。"
+    },
+    {
+      "english": "immutable",
+      "japanese": "イミュータブル（不変 / 変更不可）",
+      "explanation": "一度束縛された後に値を変更できない状態。Rustのデフォルト動作であり、意図しないデータの書き換えを防ぎます。"
+    },
+    {
+      "english": "ownership",
+      "japanese": "所有権",
+      "explanation": "Rustのメモリ安全性を保証する基本システム。各値には唯一の所有者となる変数が存在し、所有者がスコープを抜けると値は自動的に破棄（ドロップ）されます。"
+    },
+    {
+      "english": "borrow",
+      "japanese": "借用（参照）",
+      "explanation": "所有権を移動させずに、値への参照（`&T` または `&mut T`）を取得すること。不変参照は同時に複数持てますが、可変参照は同時に1つしか持てません（借用規則）。"
+    },
+    {
+      "english": "lifetime",
+      "japanese": "ライフタイム（生存期間）",
+      "explanation": "参照が有効である期間を示すジェネリクスの一種（`'a`）。ダングリングポインタ（無効なメモリ領域への参照）の発生を防ぎます。"
+    },
+    {
+      "english": "trait",
+      "japanese": "トレイト",
+      "explanation": "特定の型が実装すべき共通の振る舞い（メソッド）を定義するインターフェースのような仕組み。"
+    },
+    {
+      "english": "move",
+      "japanese": "ムーブ（所有権の移動）",
+      "explanation": "値を別の変数や関数に渡した際、所有権が移動すること。`Copy` トレイトを実装していない型（StringやVecなど）で発生します。"
+    },
+    {
+      "english": "binding",
+      "japanese": "バインディング（変数束縛）",
+      "explanation": "名前（変数名）と値やメモリ上のデータを結びつけること。`let x = ...` で行われます。"
+    },
+    {
+      "english": "type mismatch",
+      "japanese": "型の不一致",
+      "explanation": "コンパイラが期待している型と、実際に渡された式や値の型が一致しない状態（E0308）。"
+    },
+    {
+      "english": "dereference",
+      "japanese": "デリファレンス（参照外し）",
+      "explanation": "ポインタや参照（`&T`）が指し示している元の実体データにアクセスする操作（`*x`）。"
+    },
+    {
+      "english": "closure",
+      "japanese": "クロージャ（無名関数 / 閉包）",
+      "explanation": "周囲の環境（スコープ内の変数）を変数としてキャプチャして保持できる無名関数（`|x| x + 1`）。"
+    },
+    {
+      "english": "async/await",
+      "japanese": "非同期処理 (Async/Await)",
+      "explanation": "スレッドをブロックせずにI/O処理などを待機・並行実行する仕組み。`Future` トレイトに基づきます。"
+    },
+    {
+      "english": "unsafe",
+      "japanese": "アンセーフ（非安全操作）",
+      "explanation": "Rustコンパイラの安全保証を一部バイパスし、生ポインタの参照外しやFFI（C言語関数呼び出し）などを許可するブロック・関数。"
+    },
+    {
+      "english": "sized",
+      "japanese": "サイズ確定型 (Sized トレイト)",
+      "explanation": "コンパイル時にメモリ上のサイズが確定している型。Rustのジェネリクスはデフォルトで `T: Sized` が要求されます。"
+    },
+    {
+      "english": "drop",
+      "japanese": "ドロップ（デストラクタ・破棄）",
+      "explanation": "値の寿命が尽きたときにリソース（ヒープメモリやファイル記述子）を解放する仕組み。明示的な `.drop()` 呼び出しは禁止されており、`drop(x)` を用います。"
+    },
+    {
+      "english": "orphan rule",
+      "japanese": "孤児規則（オーファンルール）",
+      "explanation": "外部クレートで定義された型に対して、同じく外部クレートで定義されたトレイトを実装することを禁止するルール。競合を防ぐためのものです。"
+    },
+    {
+      "english": "pattern matching",
+      "japanese": "パターンマッチング",
+      "explanation": "`match` 式や `if let` 等を用いてデータの構造やバリアントを網羅的に検査・分解する仕組み。"
+    },
+    {
+      "english": "visibility",
+      "japanese": "可視性（公開範囲）",
+      "explanation": "`pub`, `pub(crate)`, `pub(super)` 等で指定される、モジュール外から項目にアクセス可能かどうかの制御。"
+    },
+    {
+      "english": "constant evaluation",
+      "japanese": "定数評価（コンパイル時計算）",
+      "explanation": "`const` や `static` で定義された式をコンパイル時に計算・確定する処理。"
+    }
+  ]
+}

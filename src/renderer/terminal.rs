@@ -1,0 +1,157 @@
+use colored::*;
+use crate::japanese::template::{JapaneseDiagnostic, JapaneseLevel};
+
+pub struct TerminalRenderer {
+    pub show_original: bool,
+    pub quiet: bool,
+    pub verbose: bool,
+    pub level: JapaneseLevel,
+}
+
+impl TerminalRenderer {
+    pub fn new(show_original: bool, quiet: bool, verbose: bool, level: JapaneseLevel) -> Self {
+        Self {
+            show_original,
+            quiet,
+            verbose,
+            level,
+        }
+    }
+
+    pub fn render(&self, jd: &JapaneseDiagnostic) {
+        let is_warning = jd.level == "warning";
+        let header_color = if is_warning {
+            "yellow"
+        } else {
+            "bright red"
+        };
+
+        let badge = if is_warning {
+            "警告".black().on_yellow().bold()
+        } else {
+            "エラー".white().on_red().bold()
+        };
+
+        let bar = "━".repeat(68);
+
+        println!();
+        println!("{}", bar.color(header_color));
+        println!(
+            "{} [{}] {} ({})",
+            badge,
+            jd.code.bold().bright_cyan(),
+            jd.title.bold(),
+            jd.category.name_ja().dimmed()
+        );
+        println!("{}", bar.color(header_color));
+        println!();
+
+        // 初心者モード向けの補足ヒント
+        if self.level == JapaneseLevel::Beginner {
+            if let Some(tip) = &jd.beginner_tip {
+                println!("{}", "💡【初心者向け解説】".bold().bright_magenta());
+                for line in tip.lines() {
+                    println!("  {}", line);
+                }
+                println!();
+            }
+        }
+
+        // 概要
+        println!("{}", "【概要】".bold().bright_yellow());
+        for line in jd.summary.lines() {
+            println!("  {}", line);
+        }
+        println!();
+
+        // 発生箇所
+        if let Some(loc) = &jd.location {
+            println!("{}", "【発生箇所】".bold().bright_yellow());
+            println!("  {} {}", "-->".bright_blue().bold(), loc.underline());
+            println!();
+        }
+
+        // コードスニペット
+        if !self.quiet {
+            if let Some(snippet) = &jd.snippet {
+                println!("{}", "【コード】".bold().bright_yellow());
+                for line in snippet.lines() {
+                    if line.contains('^') {
+                        println!("  {}", line.bright_red().bold());
+                    } else if line.contains('|') {
+                        let parts: Vec<&str> = line.splitn(2, '|').collect();
+                        if parts.len() == 2 {
+                            println!("  {}|{}", parts[0].bright_blue(), parts[1]);
+                        } else {
+                            println!("  {}", line);
+                        }
+                    } else {
+                        println!("  {}", line);
+                    }
+                }
+                println!();
+            }
+        }
+
+        // quietモードでなければ原因・解決策を表示
+        if !self.quiet {
+            // 原因 (Expertモードの場合は専門仕様のみ、Normal/Beginnerは平易な説明)
+            if !jd.reason.is_empty() && self.level != JapaneseLevel::Expert {
+                println!("{}", "【原因とRustの仕組み】".bold().bright_yellow());
+                for line in jd.reason.lines() {
+                    println!("  {}", line);
+                }
+                println!();
+            }
+
+            // 専門家モード向けの技術的補足
+            if self.level == JapaneseLevel::Expert {
+                if let Some(expert) = &jd.expert_note {
+                    println!("{}", "🔧【言語仕様・内部制約】".bold().bright_cyan());
+                    for line in expert.lines() {
+                        println!("  {}", line);
+                    }
+                    println!();
+                }
+            }
+
+            // 修正方法
+            if !jd.solution.is_empty() {
+                println!("{}", "【修正方法】".bold().bright_yellow());
+                for line in jd.solution.lines() {
+                    println!("  {}", line.bright_green());
+                }
+                println!();
+            }
+
+            // 修正例 Diff
+            if let Some((before, after)) = &jd.example_diff {
+                println!("{}", "【修正例】".bold().bright_yellow());
+                println!("  {} {}", "-".red().bold(), before.red());
+                println!("  {} {}", "+".green().bold(), after.green());
+                println!();
+            }
+
+            // コンパイラヒント
+            if !jd.suggestions.is_empty() {
+                println!("{}", "【コンパイラからのヒント】".bold().bright_yellow());
+                for sug in &jd.suggestions {
+                    println!("  {} {}", "•".bright_cyan(), sug);
+                }
+                println!();
+            }
+        }
+
+        // 原文表示（--original または 未対応エラー時）
+        if self.show_original {
+            if let Some(orig) = &jd.original_message {
+                println!("{}", "【コンパイラ原文 (English)】".bold().dimmed());
+                println!("  {}", orig.dimmed());
+                println!();
+            }
+        }
+
+        println!("{}", bar.color(header_color));
+        println!();
+    }
+}
