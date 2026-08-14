@@ -171,23 +171,26 @@ jpcargo fix
 ### 2. 学習・診断・検索コマンド
 
 ```bash
-# 1. 開発環境の総合ヘルスチェック
+# 1. jpcargo を最新バージョンに自動アップデート
+jpcargo update
+
+# 2. 開発環境の総合ヘルスチェック
 jpcargo doctor
 
-# 2. 指定したエラーコードの日本語詳細解説を表示
+# 3. 指定したエラーコードの日本語詳細解説を表示
 jpcargo explain E0596
 jpcargo explain E0382
 jpcargo explain E0277
 
-# 3. キーワードでエラーや用語を日本語検索
+# 4. キーワードでエラーや用語を日本語検索
 jpcargo search borrow
 jpcargo search 所有権
 jpcargo search ライフタイム
 
-# 4. 対応している全エラーコード一覧（518件）
+# 5. 対応している全エラーコード一覧（518件）
 jpcargo list
 
-# 5. エラーカテゴリ別の統計情報を表示
+# 6. エラーカテゴリ別の統計情報を表示
 jpcargo stats
 ```
 

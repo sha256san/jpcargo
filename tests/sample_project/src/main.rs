@@ -4,3 +4,4 @@ fn main() {
     a = 2;
     println!("Success: {}", a);
 }
+//bad code

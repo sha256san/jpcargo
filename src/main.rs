@@ -6,6 +6,7 @@ mod japanese;
 mod renderer;
 mod rustc;
 mod suggestion;
+mod update;
 
 use clap::Parser;
 use colored::*;
@@ -16,6 +17,7 @@ use japanese::{ExplanationService, Translator};
 use renderer::TerminalRenderer;
 use rustc::RustcRunner;
 use suggestion::run_cargo_fix;
+use update::Updater;
 
 fn main() {
     let cli = Cli::parse();
@@ -53,6 +55,9 @@ fn main() {
         }
         Commands::Doctor => {
             Doctor::run_diagnosis();
+        }
+        Commands::Update => {
+            let _ = Updater::run_self_update();
         }
         Commands::Explain { code } => {
             let translator = Translator::new();

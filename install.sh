@@ -72,7 +72,8 @@ if [ -n "$OS_TARGET" ] && [ -n "$ARCH_TARGET" ]; then
     if curl -fL -sS "$DOWNLOAD_URL" -o "$TMP_DIR/$ARCHIVE_NAME" 2>/dev/null; then
         if tar -xzf "$TMP_DIR/$ARCHIVE_NAME" -C "$TMP_DIR" 2>/dev/null; then
             if [ -f "$TMP_DIR/jpcargo" ]; then
-                mv "$TMP_DIR/jpcargo" "$INSTALL_DIR/jpcargo"
+                rm -f "$INSTALL_DIR/jpcargo" 2>/dev/null || true
+                cp -f "$TMP_DIR/jpcargo" "$INSTALL_DIR/jpcargo"
                 chmod +x "$INSTALL_DIR/jpcargo"
                 echo -e "${GREEN}完了 ⚡ (コンパイル不要で即座にインストール)${NC}"
                 INSTALLED=true

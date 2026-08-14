@@ -77,6 +77,9 @@ pub enum Commands {
     /// Rust/Cargo/Toolchain/Linker (cc/gcc/clang)/OS 環境の総合日本語診断
     Doctor,
 
+    /// jpcargo を最新バージョンに自動アップデート
+    Update,
+
     /// 指定された Rust エラーコード（例: E0596, E0308, E0382）を日本語で詳しく解説
     Explain {
         /// エラーコード (例: E0596)
