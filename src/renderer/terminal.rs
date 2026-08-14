@@ -57,13 +57,6 @@ impl TerminalRenderer {
             }
         }
 
-        // 概要
-        println!("{}", "【概要】".bold().bright_yellow());
-        for line in jd.summary.lines() {
-            println!("  {}", line);
-        }
-        println!();
-
         // 発生箇所
         if let Some(loc) = &jd.location {
             println!("{}", "【発生箇所】".bold().bright_yellow());
@@ -93,17 +86,8 @@ impl TerminalRenderer {
             }
         }
 
-        // quietモードでなければ原因・解決策を表示
+        // quietモードでなければ修正方法・ヒントを表示
         if !self.quiet {
-            // 原因 (Expertモードの場合は専門仕様のみ、Normal/Beginnerは平易な説明)
-            if !jd.reason.is_empty() && self.level != JapaneseLevel::Expert {
-                println!("{}", "【原因とRustの仕組み】".bold().bright_yellow());
-                for line in jd.reason.lines() {
-                    println!("  {}", line);
-                }
-                println!();
-            }
-
             // 専門家モード向けの技術的補足
             if self.level == JapaneseLevel::Expert {
                 if let Some(expert) = &jd.expert_note {
