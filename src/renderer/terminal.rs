@@ -115,15 +115,6 @@ impl TerminalRenderer {
                 println!("  {} {}", "+".green().bold(), after.green());
                 println!();
             }
-
-            // コンパイラヒント
-            if !jd.suggestions.is_empty() {
-                println!("{}", "【コンパイラからのヒント】".bold().bright_yellow());
-                for sug in &jd.suggestions {
-                    println!("  {} {}", "•".bright_cyan(), sug);
-                }
-                println!();
-            }
         }
 
         // 原文表示（--original または 未対応エラー時）
