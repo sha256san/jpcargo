@@ -3,32 +3,95 @@
 すべての重要な変更は本ファイルに記録されます。
 フォーマットは [Keep a Changelog](https://keepachangelog.com/ja/1.0.0/) に基づいています。
 
-## [0.3.0] - 2026-08-14
+---
+
+## [0.1.7] - 2026-08-14
 
 ### Added
-- `err1-407.md`, `err408-666.md`, `err667-806.md` に記載された **全518種類のエラーコード（E0001 〜 E0806）を完全網羅実装**:
-  - 全518件のエラーコードデータベース (`src/japanese/database.rs`) の自動統合
-  - 動的変数抽出・差分提示を行う56件の高精度カスタムルールと、462件の包括的公式診断ルールのシームレスな統合
-  - `jpcargo list` による全518件の一覧表示
-  - `jpcargo stats` による全518件のカテゴリ別集計
-  - `jpcargo explain <CODE>` で全518個のエラーコードすべてに対する詳細解説・サンプルコード表示に対応
-  - コンパイルエラー発生時の全518件完全フォールバック＆日本語診断対応
-  - **Sランク**: `E0308`, `E0382`, `E0499`, `E0502`, `E0505`, `E0507`, `E0596`, `E0597`, `E0277`, `E0599`
-  - **Aランク**: `E0425`, `E0432`, `E0433`, `E0061`, `E0004`, `E0072`, `E0133`, `E0282`, `E0283`, `E0384`, `E0603`
-  - **Bランク & 主要エラー**: `E0594`, `E0506`, `E0106`, `E0621`, `E0271`, `E0119`, `E0117`, `E0207`, `E0210`, `E0062`, `E0069`, `E0063`, `E0609`, `E0027`, `E0026`, `E0428`, `E0252`, `E0255`, `E0616`, `E0606`, `E0614`, `E0608`, `E0369`, `E0368`, `E0600`, `E0521`, `E0593`, `E0728`, `E0015`, `E0080`, `E0161`, `E0040`, `E0391`, `E0659`, `E0658`
-- `jpcargo doctor` コマンド: Rust, Cargo, rustup, リンカー(cc/gcc/clang), システム環境の総合診断
-- `jpcargo fix` コマンド: rustc の安全な提案の自動適用
-- `--level <beginner|normal|expert>` フラグ: 初心者向け／通常／専門家向けの解説難易度切り替え機能
-- リンカーエラー（`linker \`cc\` not found` 等）および Cargo 依存関係解決エラーの自動検知と日本語ガイダンス
-- 用語対訳辞書 (`dictionary/rust_terms.json`) の大幅拡充（Drop, Sized, Orphan Rule, Unsafe, Closure 等）
-- 全機能・全エラーコードのテストスイート構築 (`tests/rules_test.rs`)
+- **診断サマリー一覧テーブル機能**:
+  - `jpcargo run`, `check`, `build` 等のコンパイル終了時に、検出されたすべてのエラー・警告を整理した番号付きサマリー表を末尾に自動生成する機能を追加。
+  - 番号・発生箇所・区分（エラー/警告）・コード・タイトルが一目で把握可能に。
+
+---
+
+## [0.1.6] - 2026-08-14
+
+### Added
+- エラー発生時に詳細解説をすぐに参照できるよう、`ℹ️ エラーコード詳細: jpcargo explain <CODE>` の案内を表示。
+
+### Changed
+- 英語の重複したコンパイラヒントを完全に排除し、エラーコードと修正方法に集中したスッキリした出力に改善。
+
+---
+
+## [0.1.5] - 2026-08-14
+
+### Removed
+- ターミナル出力から `【コンパイラからのヒント】` セクションを削除し、よりダイレクトな修正ガイダンスのみに整理。
+
+---
+
+## [0.1.4] - 2026-08-14
+
+### Added
+- **`jpcargo update` コマンド**:
+  - ワンコマンドで GitHub Releases から最新バイナリを自動取得し、自己アップデートを完了する機能を実装。
+- **インストーラーの強制上書き対応**:
+  - `install.sh` において既存の `jpcargo` バイナリが存在していても確実に強制上書き（`rm -f` / `cp -f`）してインストールするよう強化。
+
+---
+
+## [0.1.3] - 2026-08-14
+
+### Changed
+- 診断出力から `【概要】` および `【原因とRustの仕組み】` を削除し、**発生箇所・コードスニペット・修正方法・修正例（Diff）** に特化した洗練されたレイアウトに変更。
+
+---
+
+## [0.1.2] - 2026-08-14
+
+### Added
+- **主要 Rust 標準 Lint / 警告診断ルールの追加**:
+  - `unused_assignments` (代入値の未使用・上書き)
+  - `unused_variables` (未使用変数)
+  - `unused_mut` (不要な mut 修飾子)
+  - `dead_code` (未使用コード・関数・構造体)
+  - `unused_imports` (未使用の use インポート)
+  - `unused_must_use` (Result 等の戻り値破棄)
+  - `non_snake_case` (スネークケース命名違反)
+  - `non_camel_case_types` (キャメルケース型名命名違反)
+  - `unreachable_code` (到達不能コード)
+  - `unreachable_patterns` (到達不能 match パターン)
+- Clippy や未知の Lint に対する高品質なフォールバック日本語ガイダンス機能。
+
+---
+
+## [0.1.1] - 2026-08-14
+
+### Added
+- **GitHub Actions マルチプラットフォーム 自動リリース CI/CD (`.github/workflows/release.yml`)**:
+  - Linux (x86_64, aarch64)
+  - macOS (Intel x86_64, Apple Silicon aarch64)
+  - Windows (x86_64)
+- **1 秒高速インストーラー (`install.sh`)**:
+  - 手元での `cargo build` を行わず、GitHub Releases の事前ビルド済みバイナリを直接取得して 1 秒で配置するインストーラーを提供。
+
+---
 
 ## [0.1.0] - 2026-08-14
 
 ### Added
-- プロジェクト仕様書 (`SPEC.md`)、未実装タスク管理 (`TODO.md`)、知識ベース (`MEMORY.md`)、開発規約 (`AGENTS.md`) の策定。
-- Rust 日本語診断 Cargo ラッパーの基本 CLI アーキテクチャ構築:
-  - `jpcargo run`, `build`, `check`, `test`, `clippy`, `doc`
-  - `jpcargo explain <CODE>`, `list`, `stats`, `search <KEYWORD>`
-- rustc JSON 診断パーサーおよびデータモデルの実装 (`src/diagnostic/`)
-- ターミナル向けリッチデザインレンダラー (`src/renderer/`)
+- **全518種類のエラーコード（`E0001` 〜 `E0806`）の完全網羅実装**:
+  - 全518件の個別ルールファイル (`src/japanese/rules/e0001.rs` 〜 `e0806.rs`) および `mod.rs` の作成
+  - 静的メタデータデータベース (`src/japanese/database.rs`)
+  - カテゴリ分類器 (`src/diagnostic/classifier.rs`)
+  - 10個の全網羅テストスイート (`tests/rules_test.rs`)
+- **CLI コマンド体系**:
+  - `jpcargo run`, `build`, `check`, `test`, `clippy`, `doc`, `fix`
+  - `jpcargo explain <CODE>` (指定エラーの日本語解説)
+  - `jpcargo list` (全518件のエラー一覧)
+  - `jpcargo stats` (カテゴリ別統計情報)
+  - `jpcargo search <KEYWORD>` (エラー・用語の日本語検索)
+  - `jpcargo doctor` (Rust/Cargo/リンカー/OS 総合環境診断)
+  - `--level <beginner|normal|expert>` (難易度切り替え)
+- 用語対訳辞書 (`dictionary/rust_terms.json`) の整備。
