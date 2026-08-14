@@ -1,14 +1,4 @@
-use clap::ValueEnum;
-use serde::{Deserialize, Serialize};
 use crate::diagnostic::ErrorCategory;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, ValueEnum, Serialize, Deserialize)]
-pub enum JapaneseLevel {
-    #[default]
-    Normal,
-    Beginner,
-    Expert,
-}
 
 /// レンダラーに渡される整形済みの日本語診断情報
 #[derive(Debug, Clone)]

@@ -1,5 +1,4 @@
 use clap::{Parser, Subcommand};
-use crate::japanese::JapaneseLevel;
 
 #[derive(Parser, Debug)]
 #[command(
@@ -21,10 +20,6 @@ pub struct Cli {
     /// 詳細なログを出力
     #[arg(short, long, global = true)]
     pub verbose: bool,
-
-    /// 日本語解説の難易度・詳細度レベル (beginner: 初心者向け, normal: 通常, expert: 専門家向け)
-    #[arg(short, long, global = true, value_enum, default_value = "normal")]
-    pub level: JapaneseLevel,
 
     #[command(subcommand)]
     pub command: Commands,

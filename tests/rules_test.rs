@@ -130,16 +130,3 @@ fn test_jpcargo_cli_doctor() {
     assert!(stdout.contains("Rust コンパイラ"));
     assert!(stdout.contains("Cargo パッケージマネージャ"));
 }
-
-#[test]
-fn test_jpcargo_cli_level_beginner() {
-    let output = Command::new("cargo")
-        .args(&["run", "--", "--level", "beginner", "explain", "E0499"])
-        .output()
-        .expect("Failed to execute jpcargo explain beginner");
-
-    assert!(output.status.success());
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("E0499"));
-    assert!(stdout.contains("初心者向け解説"));
-}

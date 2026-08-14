@@ -7,5 +7,5 @@ pub mod translator;
 #[allow(unused_imports)]
 pub use explanation::ExplanationService;
 #[allow(unused_imports)]
-pub use template::{JapaneseDiagnostic, JapaneseLevel};
+pub use template::JapaneseDiagnostic;
 pub use translator::Translator;

@@ -2,22 +2,20 @@ use colored::*;
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
 use crate::diagnostic::{parse_line, CargoMessage};
-use crate::japanese::{JapaneseLevel, Translator};
+use crate::japanese::Translator;
 use crate::renderer::TerminalRenderer;
 
 pub struct CargoRunner {
     #[allow(dead_code)]
     pub translator: Translator,
     pub renderer: TerminalRenderer,
-    pub level: JapaneseLevel,
 }
 
 impl CargoRunner {
-    pub fn new(show_original: bool, quiet: bool, verbose: bool, level: JapaneseLevel) -> Self {
+    pub fn new(show_original: bool, quiet: bool, verbose: bool) -> Self {
         Self {
             translator: Translator::new(),
-            renderer: TerminalRenderer::new(show_original, quiet, verbose, level),
-            level,
+            renderer: TerminalRenderer::new(show_original, quiet, verbose),
         }
     }
 
@@ -64,7 +62,6 @@ impl CargoRunner {
                 self.renderer.show_original,
                 self.renderer.quiet,
                 self.renderer.verbose,
-                self.level,
             );
 
             move || {

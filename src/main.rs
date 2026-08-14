@@ -21,8 +21,8 @@ use update::Updater;
 
 fn main() {
     let cli = Cli::parse();
-    let runner = CargoRunner::new(cli.original, cli.quiet, cli.verbose, cli.level);
-    let renderer = TerminalRenderer::new(cli.original, cli.quiet, cli.verbose, cli.level);
+    let runner = CargoRunner::new(cli.original, cli.quiet, cli.verbose);
+    let renderer = TerminalRenderer::new(cli.original, cli.quiet, cli.verbose);
 
     match cli.command {
         Commands::Run { args } => {
@@ -125,7 +125,7 @@ fn main() {
             println!();
         }
         Commands::Rustc { file, args } => {
-            let rustc_runner = RustcRunner::new(cli.original, cli.quiet, cli.verbose, cli.level);
+            let rustc_runner = RustcRunner::new(cli.original, cli.quiet, cli.verbose);
             let code = rustc_runner.compile_file(&file, &args).unwrap_or(1);
             std::process::exit(code);
         }

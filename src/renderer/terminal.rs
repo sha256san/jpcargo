@@ -1,20 +1,18 @@
 use colored::*;
-use crate::japanese::template::{JapaneseDiagnostic, JapaneseLevel};
+use crate::japanese::template::JapaneseDiagnostic;
 
 pub struct TerminalRenderer {
     pub show_original: bool,
     pub quiet: bool,
     pub verbose: bool,
-    pub level: JapaneseLevel,
 }
 
 impl TerminalRenderer {
-    pub fn new(show_original: bool, quiet: bool, verbose: bool, level: JapaneseLevel) -> Self {
+    pub fn new(show_original: bool, quiet: bool, verbose: bool) -> Self {
         Self {
             show_original,
             quiet,
             verbose,
-            level,
         }
     }
 
@@ -45,17 +43,6 @@ impl TerminalRenderer {
         );
         println!("{}", bar.color(header_color));
         println!();
-
-        // 初心者モード向けの補足ヒント
-        if self.level == JapaneseLevel::Beginner {
-            if let Some(tip) = &jd.beginner_tip {
-                println!("{}", "💡【初心者向け解説】".bold().bright_magenta());
-                for line in tip.lines() {
-                    println!("  {}", line);
-                }
-                println!();
-            }
-        }
 
         // 発生箇所
         if let Some(loc) = &jd.location {
@@ -88,15 +75,13 @@ impl TerminalRenderer {
 
         // quietモードでなければ修正方法・ヒントを表示
         if !self.quiet {
-            // 専門家モード向けの技術的補足
-            if self.level == JapaneseLevel::Expert {
-                if let Some(expert) = &jd.expert_note {
-                    println!("{}", "🔧【言語仕様・内部制約】".bold().bright_cyan());
-                    for line in expert.lines() {
-                        println!("  {}", line);
-                    }
-                    println!();
+            // 専門家向けの技術的補足
+            if let Some(expert) = &jd.expert_note {
+                println!("{}", "🔧【言語仕様・内部制約】".bold().bright_cyan());
+                for line in expert.lines() {
+                    println!("  {}", line);
                 }
+                println!();
             }
 
             // 修正方法

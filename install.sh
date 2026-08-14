@@ -130,6 +130,6 @@ echo -e "  ${CYAN}jpcargo run${NC}                   # cargo run を日本語エ
 echo -e "  ${CYAN}jpcargo check${NC}                 # cargo check を日本語エラー診断付きで実行"
 echo -e "  ${CYAN}jpcargo list${NC}                  # 対応している全518種類のエラーコード一覧"
 echo -e "  ${CYAN}jpcargo explain E0596${NC}         # 指定エラーコードの日本語解説を表示"
-echo -e "  ${CYAN}jpcargo --level beginner check${NC}# 初心者向け解説モードで実行"
+echo -e "  ${CYAN}jpcargo update${NC}                # 最新バージョンに自己アップデート"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""

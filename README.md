@@ -142,13 +142,13 @@ cd jpcargo
 
 通常の `cargo` コマンドの代わりに `jpcargo` を使用するだけです。
 
-### 1. 日常の開発コマンド
+### 1. 基本コマンド（いつもの Cargo の代わりに実行）
 
 ```bash
 # cargo run の代わりに
 jpcargo run
 
-# cargo check の代わりに
+# cargo check の代わりに（高速構文・型チェック）
 jpcargo check
 
 # cargo build の代わりに
@@ -157,10 +157,10 @@ jpcargo build
 # cargo test の代わりに
 jpcargo test
 
-# cargo clippy の代わりに（日本語警告）
+# cargo clippy の代わりに（詳細Lint診断）
 jpcargo clippy
 
-# rustc の安全な修正案を自動適用
+# コンパイラの修正提案を自動適用
 jpcargo fix
 ```
 

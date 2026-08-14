@@ -1,22 +1,20 @@
 use std::process::{Command, Stdio};
 use std::io::{BufRead, BufReader};
 use crate::diagnostic::Diagnostic;
-use crate::japanese::{JapaneseLevel, Translator};
+use crate::japanese::Translator;
 use crate::renderer::TerminalRenderer;
 
 pub struct RustcRunner {
     #[allow(dead_code)]
     pub translator: Translator,
     pub renderer: TerminalRenderer,
-    pub level: JapaneseLevel,
 }
 
 impl RustcRunner {
-    pub fn new(show_original: bool, quiet: bool, verbose: bool, level: JapaneseLevel) -> Self {
+    pub fn new(show_original: bool, quiet: bool, verbose: bool) -> Self {
         Self {
             translator: Translator::new(),
-            renderer: TerminalRenderer::new(show_original, quiet, verbose, level),
-            level,
+            renderer: TerminalRenderer::new(show_original, quiet, verbose),
         }
     }
 
@@ -42,7 +40,6 @@ impl RustcRunner {
             self.renderer.show_original,
             self.renderer.quiet,
             self.renderer.verbose,
-            self.level,
         );
 
         let stderr_handle = std::thread::spawn(move || {
