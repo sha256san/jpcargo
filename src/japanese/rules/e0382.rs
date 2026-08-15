@@ -1,6 +1,6 @@
 use regex::Regex;
 use crate::diagnostic::{format_location, format_snippet, Diagnostic, ErrorCategory};
-use crate::japanese::template::JapaneseDiagnostic;
+use crate::japanese::template::{FixOption, JapaneseDiagnostic};
 use super::DiagnosticRule;
 
 pub struct E0382;
@@ -24,7 +24,7 @@ impl DiagnosticRule for E0382 {
             .captures(&diag.message)
             .and_then(|c| c.name("var"))
             .map(|m| m.as_str())
-            .unwrap_or("該当の値");
+            .unwrap_or("s");
 
         let summary = format!(
             "変数「{}」の所有権はすでに別の場所へ移動（ムーブ）しているため、ここで再利用することはできません。",
@@ -35,13 +35,7 @@ impl DiagnosticRule for E0382 {
             所有権が移動（ムーブ）し、元の変数は無効化されます。\n\
             これにより、二重解放（double free）などの重大なメモリバグを防いでいます。";
 
-        let solution = format!(
-            "以下のいずれかの方法で解決してください:\n\
-            1. 所有権を渡す代わりに **参照（借用）** を渡す（例: `&{}`）\n\
-            2. データを複製する（例: `{}.clone()`）\n\
-            3. 値の利用順序を見直す",
-            var_name, var_name
-        );
+        let solution = "";
 
         let mut jd = JapaneseDiagnostic::new(
             self.code(),
@@ -57,6 +51,18 @@ impl DiagnosticRule for E0382 {
         jd.snippet = format_snippet(diag);
         jd.original_message = Some(diag.message.clone());
 
+        // 複数の修正方法とコード例（日本語コメント付き）
+        jd.add_fix_option(FixOption::diff(
+            "方法1: 所有権を渡す代わりに参照（借用）を渡す（推奨）",
+            format!("let s2 = {};", var_name),
+            format!("let s2 = &{};", var_name),
+        ));
+        jd.add_fix_option(FixOption::diff(
+            "方法2: データを複製（クローン）して独立した値を持たせる",
+            format!("let s2 = {};", var_name),
+            format!("let s2 = {}.clone();", var_name),
+        ));
+
         for child in &diag.children {
             if child.level == "note" || child.level == "help" {
                 jd.suggestions.push(format!("{}: {}", child.level, child.message));
@@ -67,14 +73,25 @@ impl DiagnosticRule for E0382 {
     }
 
     fn general_explanation(&self) -> JapaneseDiagnostic {
-        JapaneseDiagnostic::new(
+        let mut jd = JapaneseDiagnostic::new(
             self.code(),
             self.category(),
             "error",
             self.title(),
             "所有権がすでにムーブされた変数を後続のコードで読み取ろうとすると発生します。",
             "Rust のメモリ管理原則では、各値は単一の所有者を持ち、ムーブ後は元の変数が無効になります。",
-            "参照（`&`）を渡すか、`.clone()` で複製を作成してください。",
-        )
+            "",
+        );
+        jd.add_fix_option(FixOption::diff(
+            "方法1: 参照（借用）を渡す（推奨）",
+            "let s2 = s;",
+            "let s2 = &s;",
+        ));
+        jd.add_fix_option(FixOption::diff(
+            "方法2: データを複製（クローン）する",
+            "let s2 = s;",
+            "let s2 = s.clone();",
+        ));
+        jd
     }
 }

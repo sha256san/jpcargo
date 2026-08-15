@@ -75,22 +75,42 @@ impl TerminalRenderer {
 
         // quietモードでなければ修正例を表示
         if !self.quiet {
+            let has_options = !jd.fix_options.is_empty();
             let has_diff = jd.example_diff.is_some();
             let has_solution = !jd.solution.is_empty();
 
-            if has_diff || has_solution {
+            if has_options || has_diff || has_solution {
                 println!("{}", "【修正例】".bold().bright_yellow());
 
-                // 修正例 Diff
-                if let Some((before, after)) = &jd.example_diff {
-                    println!("  {} {}", "-".red().bold(), before.red());
-                    println!("  {} {}", "+".green().bold(), after.green());
-                }
+                if has_options {
+                    for (i, opt) in jd.fix_options.iter().enumerate() {
+                        if !opt.description.is_empty() {
+                            println!("  // {}", opt.description.cyan());
+                        }
+                        if let Some((before, after)) = &opt.diff {
+                            println!("  {} {}", "-".red().bold(), before.red());
+                            println!("  {} {}", "+".green().bold(), after.green());
+                        } else if let Some(code) = &opt.code {
+                            for line in code.lines() {
+                                println!("  {}", line.bright_green());
+                            }
+                        }
+                        if i + 1 < jd.fix_options.len() {
+                            println!();
+                        }
+                    }
+                } else {
+                    // 修正例 Diff
+                    if let Some((before, after)) = &jd.example_diff {
+                        println!("  {} {}", "-".red().bold(), before.red());
+                        println!("  {} {}", "+".green().bold(), after.green());
+                    }
 
-                // 一言解説
-                if has_solution {
-                    for line in jd.solution.lines() {
-                        println!("  {}", line.bright_green());
+                    // 一言解説
+                    if has_solution {
+                        for line in jd.solution.lines() {
+                            println!("  {}", line.bright_green());
+                        }
                     }
                 }
                 println!();

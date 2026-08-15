@@ -1,6 +1,6 @@
 use regex::Regex;
 use crate::diagnostic::{format_location, format_snippet, Diagnostic, ErrorCategory};
-use crate::japanese::template::JapaneseDiagnostic;
+use crate::japanese::template::{FixOption, JapaneseDiagnostic};
 use super::DiagnosticRule;
 
 pub struct E0502;
@@ -36,8 +36,7 @@ impl DiagnosticRule for E0502 {
             - 唯一の可変参照（`&mut T`）が存在する\n\
             参照経由で読み取っている最中にデータが書き換えられることによるデータ競合やメモリ破壊を防ぐためです。";
 
-        let solution = "1. 不変参照の利用がすべて終わった後に可変借用を行うように順序を調整するか、\n\
-            2. ブロック `{ ... }` で囲んで不変参照のスコープ（ライフタイム）を早期に終了させてください。".to_string();
+        let solution = "";
 
         let mut jd = JapaneseDiagnostic::new(
             self.code(),
@@ -53,6 +52,18 @@ impl DiagnosticRule for E0502 {
         jd.snippet = format_snippet(diag);
         jd.original_message = Some(diag.message.clone());
 
+        // 複数の修正方法とコード例（日本語コメント付き）
+        jd.add_fix_option(FixOption::diff(
+            "方法1: 不変参照の利用が完全に終わった後に可変操作（push等）を行う",
+            format!("{}.push(item); println!(\"{{}}\", first);", var_name),
+            format!("println!(\"{{}}\", first); {}.push(item);", var_name),
+        ));
+        jd.add_fix_option(FixOption::diff(
+            "方法2: 参照（借用）ではなく値をクローンして独立して保持する",
+            format!("let first = &{}[0];", var_name),
+            format!("let first = {}[0].clone();", var_name),
+        ));
+
         for child in &diag.children {
             jd.suggestions.push(format!("{}: {}", child.level, child.message));
         }
@@ -61,14 +72,25 @@ impl DiagnosticRule for E0502 {
     }
 
     fn general_explanation(&self) -> JapaneseDiagnostic {
-        JapaneseDiagnostic::new(
+        let mut jd = JapaneseDiagnostic::new(
             self.code(),
             self.category(),
             "error",
             self.title(),
             "不変参照と可変参照が同じスコープで同時に存在しようとした場合に発生します。",
             "データ競合を防ぐため、Rust では「複数の読み取り参照」か「単一の書き込み参照」のどちらかしか許可されません。",
-            "参照のスコープを分離するか、利用順序を見直してください。",
-        )
+            "",
+        );
+        jd.add_fix_option(FixOption::diff(
+            "方法1: 不変参照の利用を先に完了させる",
+            "list.push(4); println!(\"{}\", first);",
+            "println!(\"{}\", first); list.push(4);",
+        ));
+        jd.add_fix_option(FixOption::diff(
+            "方法2: 参照ではなく値そのものをクローンする",
+            "let first = &list[0];",
+            "let first = list[0].clone();",
+        ));
+        jd
     }
 }

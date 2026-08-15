@@ -1,6 +1,6 @@
 use regex::Regex;
 use crate::diagnostic::{format_location, format_snippet, Diagnostic, ErrorCategory};
-use crate::japanese::template::JapaneseDiagnostic;
+use crate::japanese::template::{FixOption, JapaneseDiagnostic};
 use super::DiagnosticRule;
 
 pub struct E0384;
@@ -24,7 +24,7 @@ impl DiagnosticRule for E0384 {
             .captures(&diag.message)
             .and_then(|c| c.name("var"))
             .map(|m| m.as_str())
-            .unwrap_or("該当の変数");
+            .unwrap_or("a");
 
         let summary = format!(
             "変数「{}」は不変（immutable）として宣言されているため、2回目の値の代入（再代入）はできません。",
@@ -35,14 +35,7 @@ impl DiagnosticRule for E0384 {
             初期値が設定された後に値を上書き・変更することは許可されていません。\n\
             変数を後から書き換える必要がある場合は、明示的に可変（`mut`）にする必要があります。";
 
-        let solution = format!(
-            "変数宣言に `mut` キーワードを追加して、可変変数として宣言してください。\n\
-            例: `let mut {} = ...;`",
-            var_name
-        );
-
-        let before = format!("let {} = ...;", var_name);
-        let after = format!("let mut {} = ...;", var_name);
+        let solution = "";
 
         let mut jd = JapaneseDiagnostic::new(
             self.code(),
@@ -56,8 +49,19 @@ impl DiagnosticRule for E0384 {
 
         jd.location = format_location(diag);
         jd.snippet = format_snippet(diag);
-        jd.example_diff = Some((before, after));
         jd.original_message = Some(diag.message.clone());
+
+        // 複数の修正方法とコード例（日本語コメント付き）
+        jd.add_fix_option(FixOption::diff(
+            "方法1: 変数宣言に `mut` を追加して可変変数にする（推奨）",
+            format!("let {} = ...;", var_name),
+            format!("let mut {} = ...;", var_name),
+        ));
+        jd.add_fix_option(FixOption::diff(
+            "方法2: `let` を付けて新しい変数として再定義（シャドーイング）する",
+            format!("{} = ...;", var_name),
+            format!("let {} = ...;", var_name),
+        ));
 
         for child in &diag.children {
             if child.level == "help" {
@@ -71,14 +75,25 @@ impl DiagnosticRule for E0384 {
     }
 
     fn general_explanation(&self) -> JapaneseDiagnostic {
-        JapaneseDiagnostic::new(
+        let mut jd = JapaneseDiagnostic::new(
             self.code(),
             self.category(),
             "error",
             self.title(),
             "すでに初期化された不変変数に対して、2回目の値の代入を行おうとすると発生します。",
             "Rust の変数はデフォルトで不変（再代入不可）です。",
-            "変数定義時に `let mut` を使用して可変であることを宣言してください。",
-        )
+            "",
+        );
+        jd.add_fix_option(FixOption::diff(
+            "方法1: 変数宣言に `mut` を追加する",
+            "let x = ...;",
+            "let mut x = ...;",
+        ));
+        jd.add_fix_option(FixOption::diff(
+            "方法2: let でシャドーイングする",
+            "x = ...;",
+            "let x = ...;",
+        ));
+        jd
     }
 }

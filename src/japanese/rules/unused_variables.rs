@@ -1,6 +1,6 @@
 use regex::Regex;
 use crate::diagnostic::{format_location, format_snippet, Diagnostic, ErrorCategory};
-use crate::japanese::template::JapaneseDiagnostic;
+use crate::japanese::template::{FixOption, JapaneseDiagnostic};
 use super::DiagnosticRule;
 
 pub struct UnusedVariables;
@@ -24,7 +24,7 @@ impl DiagnosticRule for UnusedVariables {
             .captures(&diag.message)
             .and_then(|c| c.name("var"))
             .map(|m| m.as_str())
-            .unwrap_or("該当の変数");
+            .unwrap_or("var");
 
         let summary = format!(
             "変数「{}」が定義されましたが、以降のコードで一度も読み取られていません。",
@@ -32,11 +32,7 @@ impl DiagnosticRule for UnusedVariables {
         );
 
         let reason = "タイポやロジックの書き忘れを防ぐため、Rustコンパイラは未使用変数を警告として検知します。";
-        let solution = format!(
-            "1. 不要な変数であれば宣言を削除してください。\n\
-            2. 意図的に未使用にする場合は、変数名の先頭にアンダースコアを付けてください（例: `_{}`）。",
-            var_name
-        );
+        let solution = "";
 
         let mut jd = JapaneseDiagnostic::new(
             self.code(),
@@ -48,13 +44,21 @@ impl DiagnosticRule for UnusedVariables {
             solution,
         );
 
-        jd.beginner_tip = Some(format!(
-            "「変数を作ったけれど使っていません」。使わない場合は変数名を `_{}` にすると警告が消えます。",
-            var_name
-        ));
         jd.location = format_location(diag);
         jd.snippet = format_snippet(diag);
         jd.original_message = Some(diag.message.clone());
+
+        // 複数の修正方法とコード例（日本語コメント付き）
+        jd.add_fix_option(FixOption::diff(
+            "方法1: 意図的に未使用にする場合は先頭にアンダースコアを付ける",
+            format!("let {} = ...;", var_name),
+            format!("let _{} = ...;", var_name),
+        ));
+        jd.add_fix_option(FixOption::diff(
+            "方法2: 不要な変数であれば宣言そのものを削除する",
+            format!("let {} = ...;", var_name),
+            "// (削除)",
+        ));
 
         for child in &diag.children {
             jd.suggestions.push(format!("{}: {}", child.level, child.message));
@@ -64,14 +68,25 @@ impl DiagnosticRule for UnusedVariables {
     }
 
     fn general_explanation(&self) -> JapaneseDiagnostic {
-        JapaneseDiagnostic::new(
+        let mut jd = JapaneseDiagnostic::new(
             self.code(),
             self.category(),
             "warning",
             self.title(),
             "定義された変数が一度も使われていない場合に発生します。",
             "タイポや未使用リソースの検知が目的です。",
-            "変数を削除するか、先頭に `_` を付けて `_var` と命名してください。",
-        )
+            "",
+        );
+        jd.add_fix_option(FixOption::diff(
+            "方法1: 先頭にアンダースコアを付ける",
+            "let x = ...;",
+            "let _x = ...;",
+        ));
+        jd.add_fix_option(FixOption::diff(
+            "方法2: 不要な変数を削除する",
+            "let x = ...;",
+            "// (削除)",
+        ));
+        jd
     }
 }
