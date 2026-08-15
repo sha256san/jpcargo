@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-#  jpcargo 高速インストーラー（事前ビルド済みバイナリ直接ダウンロード）
-#  GitHub Actions でコンパイルされたバイナリを直接ダウンロードして即座に配置します
-#
-#  使い方:
-#    curl -fsSL https://raw.githubusercontent.com/sha256san/jpcargo/main/install.sh | bash
+#  jpcargo インストールスクリプト
 # ==============================================================================
 
 set -e
@@ -21,7 +17,7 @@ REPO="sha256san/jpcargo"
 INSTALL_DIR="${CARGO_HOME:-$HOME/.cargo}/bin"
 
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BOLD} 🦀 jpcargo 高速インストーラー（GitHub Actions 事前ビルドバイナリ）${NC}"
+echo -e "${BOLD} jpcargo インストール${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -56,43 +52,42 @@ esac
 mkdir -p "$INSTALL_DIR"
 INSTALLED=false
 
-# 2. 事前ビルド済みバイナリのダウンロード試行 (GitHub Releases)
+# 2. 事前ビルド済みバイナリのダウンロード
 if [ -n "$OS_TARGET" ] && [ -n "$ARCH_TARGET" ]; then
     TARGET="${ARCH_TARGET}-${OS_TARGET}"
     ARCHIVE_NAME="jpcargo-${TARGET}.tar.gz"
     DOWNLOAD_URL="https://github.com/${REPO}/releases/latest/download/${ARCHIVE_NAME}"
 
-    echo -e "  検出環境: ${BOLD}${TARGET}${NC}"
-    echo -n "  ▶ GitHub Releases からバイナリをダウンロード中... "
+    echo -e "  環境: ${BOLD}${TARGET}${NC}"
+    echo -n "  バイナリ取得中... "
 
     TMP_DIR="$(mktemp -d)"
     trap 'rm -rf "$TMP_DIR"' EXIT
 
-    # ダウンロード試行（HTTPステータスを確認してエラー時はフォールバック）
     if curl -fL -sS "$DOWNLOAD_URL" -o "$TMP_DIR/$ARCHIVE_NAME" 2>/dev/null; then
         if tar -xzf "$TMP_DIR/$ARCHIVE_NAME" -C "$TMP_DIR" 2>/dev/null; then
             if [ -f "$TMP_DIR/jpcargo" ]; then
                 rm -f "$INSTALL_DIR/jpcargo" 2>/dev/null || true
                 cp -f "$TMP_DIR/jpcargo" "$INSTALL_DIR/jpcargo"
                 chmod +x "$INSTALL_DIR/jpcargo"
-                echo -e "${GREEN}完了 ⚡ (コンパイル不要で即座にインストール)${NC}"
+                echo -e "${GREEN}完了${NC}"
                 INSTALLED=true
             fi
         fi
     fi
 
     if [ "$INSTALLED" = false ]; then
-        echo -e "${YELLOW}スキップ (Releaseバイナリが見つからないためローカルビルドを実行します)${NC}"
+        echo -e "${YELLOW}ローカルビルドに切り替えます${NC}"
     fi
 fi
 
-# 3. 事前ビルドが取得できなかった場合のフォールバック (cargo install)
+# 3. ソースからのビルド（フォールバック）
 if [ "$INSTALLED" = false ]; then
     echo ""
-    echo -e "  ${YELLOW}▶${NC} ${BOLD}ソースコードから cargo install を実行中...${NC}"
+    echo -e "  cargo install 実行中..."
     
     if ! command -v cargo >/dev/null 2>&1; then
-        echo -e "${RED}エラー: cargo が見つかりません。Rust をインストールしてください: https://rustup.rs/${NC}"
+        echo -e "${RED}[x] エラー: cargo が見つかりません。Rust をインストールしてください: https://rustup.rs/${NC}"
         exit 1
     fi
 
@@ -110,26 +105,26 @@ if [ "$INSTALLED" = false ]; then
 fi
 
 echo ""
-echo -e "  ${GREEN}✅ インストールが正常に完了しました！ -> ${INSTALL_DIR}/jpcargo${NC}"
+echo -e "  ${GREEN}[v] インストール完了: ${INSTALL_DIR}/jpcargo${NC}"
 
 # 4. PATH の確認
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
     echo ""
-    echo -e "  ${YELLOW}⚠️  警告: $INSTALL_DIR が PATH に含まれていません。${NC}"
-    echo "  シェル設定ファイル（~/.bashrc, ~/.zshrc 等）に以下を追加してください:"
+    echo -e "  ${YELLOW}[!] $INSTALL_DIR が PATH に含まれていません。${NC}"
+    echo "  シェル設定（~/.bashrc, ~/.zshrc 等）に追加してください:"
     echo -e "    ${CYAN}export PATH=\"${INSTALL_DIR}:\$PATH\"${NC}"
 fi
 
 # 5. 完了案内
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BOLD} 🎉 準備完了！ 以下のコマンドを試してみましょう:${NC}"
+echo -e "${BOLD} コマンド例:${NC}"
 echo ""
-echo -e "  ${CYAN}jpcargo doctor${NC}                # 開発環境の総合診断"
-echo -e "  ${CYAN}jpcargo run${NC}                   # cargo run を日本語エラー診断付きで実行"
-echo -e "  ${CYAN}jpcargo check${NC}                 # cargo check を日本語エラー診断付きで実行"
-echo -e "  ${CYAN}jpcargo list${NC}                  # 対応している全518種類のエラーコード一覧"
-echo -e "  ${CYAN}jpcargo explain E0596${NC}         # 指定エラーコードの日本語解説を表示"
-echo -e "  ${CYAN}jpcargo update${NC}                # 最新バージョンに自己アップデート"
+echo -e "  ${CYAN}jpcargo run${NC}                   # cargo run を日本語診断付きで実行"
+echo -e "  ${CYAN}jpcargo check${NC}                 # cargo check を日本語診断付きで実行"
+echo -e "  ${CYAN}jpcargo list${NC}                  # 対応エラーコード一覧"
+echo -e "  ${CYAN}jpcargo explain E0596${NC}         # エラーコード解説"
+echo -e "  ${CYAN}jpcargo update${NC}                # 最新版にアップデート"
+echo -e "  ${CYAN}jpcargo doctor${NC}                # 開発環境の診断"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""

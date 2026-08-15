@@ -77,7 +77,7 @@ impl TerminalRenderer {
         if !self.quiet {
             // 専門家向けの技術的補足
             if let Some(expert) = &jd.expert_note {
-                println!("{}", "🔧【言語仕様・内部制約】".bold().bright_cyan());
+                println!("{}", "【言語仕様・内部制約】".bold().bright_cyan());
                 for line in expert.lines() {
                     println!("  {}", line);
                 }
@@ -105,8 +105,7 @@ impl TerminalRenderer {
         // エラーコード詳細コマンドの案内
         if jd.code.starts_with('E') && jd.code.len() == 5 {
             println!(
-                "  {} エラーコード詳細: {}",
-                "ℹ️".bright_blue(),
+                "  エラーコード詳細: {}",
                 format!("jpcargo explain {}", jd.code).bright_cyan().bold()
             );
             println!();
@@ -138,7 +137,7 @@ impl TerminalRenderer {
         println!("{}", bar.bright_cyan());
         println!(
             "{} (エラー: {} 件, 警告: {} 件)",
-            " 📋 診断サマリー一覧".bold().bright_white(),
+            " 診断サマリー一覧".bold().bright_white(),
             total_errors.to_string().bright_red().bold(),
             total_warnings.to_string().yellow().bold()
         );

@@ -126,7 +126,7 @@ fn test_jpcargo_cli_doctor() {
 
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("Rust & Cargo 開発環境総合診断"));
+    assert!(stdout.contains("Rust & Cargo 開発環境診断"));
     assert!(stdout.contains("Rust コンパイラ"));
     assert!(stdout.contains("Cargo パッケージマネージャ"));
 }

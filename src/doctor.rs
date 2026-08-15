@@ -8,7 +8,7 @@ impl Doctor {
         let bar = "━".repeat(68);
         println!();
         println!("{}", bar.bright_cyan());
-        println!("{}", " 🩺 jpcargo doctor — Rust & Cargo 開発環境総合診断".bold().bright_white());
+        println!("{}", " jpcargo doctor — Rust & Cargo 開発環境診断".bold().bright_white());
         println!("{}", bar.bright_cyan());
         println!();
 
@@ -32,11 +32,11 @@ impl Doctor {
         println!();
 
         // 総合判定
-        println!("{}", "【診断結果サマリー】".bold().bright_yellow());
+        println!("{}", "【診断結果】".bold().bright_yellow());
         if cc_ok {
-            println!("  {} すべての必須コンポーネントが正常に利用可能です。快適に Rust 開発を行えます！", "✅ [正常]".bright_green().bold());
+            println!("  {} すべての必須コンポーネントが正常に利用可能です。", "[v] [正常]".bright_green().bold());
         } else {
-            println!("  {} Cコンパイラ/リンカーが見つかりません。ビルド時にリンクエラーが発生する可能性があります。", "⚠️ [要確認]".bright_yellow().bold());
+            println!("  {} Cコンパイラ/リンカーが見つかりません。ビルド時にリンクエラーが発生する可能性があります。", "[!] [要確認]".bright_yellow().bold());
             println!("     Debian/Ubuntu: `sudo apt install build-essential`");
             println!("     macOS:         `xcode-select --install`");
             println!("     Fedora/RHEL:   `sudo dnf groupinstall 'Development Tools'`");
@@ -58,9 +58,9 @@ impl Doctor {
             }
             _ => {
                 if required {
-                    println!("{}", "見つかりません (必須)".bright_red().bold());
+                    println!("{}", "[x] 見つかりません (必須)".bright_red().bold());
                 } else {
-                    println!("{}", "未インストール (任意)".yellow());
+                    println!("{}", "[-] 未インストール (任意)".yellow());
                 }
                 false
             }
@@ -83,7 +83,7 @@ impl Doctor {
                 }
             }
         }
-        println!("{}", "見つかりません".bright_red().bold());
+        println!("{}", "[x] 見つかりません".bright_red().bold());
         false
     }
 }

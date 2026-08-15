@@ -10,14 +10,13 @@ impl Updater {
 
         println!();
         println!("{}", bar.bright_cyan());
-        println!("{}", " 🔄 jpcargo セルフアップデート".bold().bright_white());
+        println!("{}", " jpcargo アップデート".bold().bright_white());
         println!("{}", bar.bright_cyan());
         println!();
-        println!("  現在のバージョン: {}", current_version.bold().bright_yellow());
-        println!("  ▶ 最新リリースの確認および更新を実行中...");
+        println!("  現在バージョン: {}", current_version.bold().bright_yellow());
+        println!("  最新版を取得中...");
         println!();
 
-        // curl で最新の install.sh を取得して bash で実行
         let status = Command::new("bash")
             .arg("-c")
             .arg("curl -fsSL https://raw.githubusercontent.com/sha256san/jpcargo/main/install.sh?v=$(date +%s) | bash")
@@ -25,14 +24,14 @@ impl Updater {
 
         if status.success() {
             println!();
-            println!("{}", "✅ jpcargo は最新バージョンに正常にアップデートされました！".bold().bright_green());
+            println!("{}", "  [v] 最新バージョンへの更新が完了しました".bold().bright_green());
             println!("{}", bar.bright_cyan());
             println!();
         } else {
             println!();
-            println!("{}", "❌ アップデート中にエラーが発生しました。".bold().bright_red());
-            println!("手動で以下のコマンドを実行してください:");
-            println!("  curl -fsSL https://raw.githubusercontent.com/sha256san/jpcargo/main/install.sh | bash");
+            println!("{}", "  [x] アップデートに失敗しました".bold().bright_red());
+            println!("  手動実行コマンド:");
+            println!("    curl -fsSL https://raw.githubusercontent.com/sha256san/jpcargo/main/install.sh | bash");
             println!("{}", bar.bright_cyan());
             println!();
         }

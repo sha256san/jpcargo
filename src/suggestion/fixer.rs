@@ -38,7 +38,7 @@ pub fn extract_suggestions(diag: &Diagnostic) -> Vec<FixSuggestion> {
 }
 
 pub fn run_cargo_fix(args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
-    println!("\n{}", "🔧 jpcargo fix — rustc の自動修正候補（MachineApplicable）を適用中...".bold().bright_cyan());
+    println!("\n{}", "jpcargo fix — rustc の自動修正を適用中...".bold().bright_cyan());
 
     let mut cmd = Command::new("cargo");
     cmd.arg("fix");
@@ -53,9 +53,9 @@ pub fn run_cargo_fix(args: &[String]) -> Result<i32, Box<dyn std::error::Error>>
     })?;
 
     if status.success() {
-        println!("{}", "✅ 自動修正が完了しました。".bold().bright_green());
+        println!("{}", "  [v] 自動修正が完了しました".bold().bright_green());
     } else {
-        println!("{}", "⚠️ 一部の修正を自動適用できませんでした。手動での確認が必要です。".bold().bright_yellow());
+        println!("{}", "  [!] 一部の修正を自動適用できませんでした。手動での確認が必要です。".bold().bright_yellow());
     }
 
     Ok(status.code().unwrap_or(1))
