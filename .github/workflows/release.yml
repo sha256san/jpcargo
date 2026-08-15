@@ -17,23 +17,32 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Linux x86_64
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
             bin_name: jpcargo
             archive_name: jpcargo-x86_64-unknown-linux-gnu.tar.gz
+
+          # Linux ARM64 (aarch64 - Raspberry Pi 4/5, AWS Graviton, ARM VPS)
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
             bin_name: jpcargo
             archive_name: jpcargo-aarch64-unknown-linux-gnu.tar.gz
-            use_cross: true
+            is_arm_linux: true
+
+          # macOS Intel (x86_64)
           - target: x86_64-apple-darwin
-            os: macos-latest
+            os: macos-13
             bin_name: jpcargo
             archive_name: jpcargo-x86_64-apple-darwin.tar.gz
+
+          # macOS Apple Silicon (aarch64 - M1 / M2 / M3 / M4)
           - target: aarch64-apple-darwin
             os: macos-latest
             bin_name: jpcargo
             archive_name: jpcargo-aarch64-apple-darwin.tar.gz
+
+          # Windows x86_64
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             bin_name: jpcargo.exe
@@ -43,22 +52,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Rust
+      - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
-      - name: Install Cross
-        if: matrix.use_cross
-        run: cargo install cross --git https://github.com/cross-rs/cross
+      - name: Install ARM Linux cross-linker
+        if: matrix.is_arm_linux
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+        shell: bash
 
       - name: Build binary
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
         run: |
-          if [ "${{ matrix.use_cross }}" = "true" ]; then
-            cross build --release --target ${{ matrix.target }}
-          else
-            cargo build --release --target ${{ matrix.target }}
-          fi
+          cargo build --release --target ${{ matrix.target }}
         shell: bash
 
       - name: Create archive (Unix)

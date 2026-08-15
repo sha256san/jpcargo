@@ -5,6 +5,15 @@
 
 ---
 
+## [0.1.9] - 2026-08-15
+
+### Added
+- **Apple Silicon (macOS aarch64 - M1/M2/M3/M4) & Linux ARM (aarch64) ビルドの最適化**:
+  - GitHub Actions (`.github/workflows/release.yml`) にて、`gcc-aarch64-linux-gnu` クロスリンカーを用いた高速 Linux ARM64 ビルドおよび `macos-latest` ネイティブ Apple Silicon ビルドを完備。
+  - Raspberry Pi、AWS Graviton、ARM Linux VPS、M1〜M4 Mac での 1 秒インストール・アップデートに完全対応。
+
+---
+
 ## [0.1.8] - 2026-08-14
 
 ### Removed

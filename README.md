@@ -103,14 +103,20 @@ curl -fsSL https://raw.githubusercontent.com/sha256san/jpcargo/main/install.sh |
 
 ---
 
-### またはバイナリを直接 1行で配置（最速）
+### またはバイナリを直接 1行で配置（コンパイル不要・最速）
 
 ```bash
-# Linux (x86_64)
+# Linux (x86_64 / Intel & AMD)
 curl -fsSL https://github.com/sha256san/jpcargo/releases/latest/download/jpcargo-x86_64-unknown-linux-gnu.tar.gz | tar -xz -C ~/.cargo/bin
 
-# macOS (Apple Silicon / M1, M2, M3)
+# Linux ARM64 (aarch64 / Raspberry Pi, AWS Graviton, ARM VPS)
+curl -fsSL https://github.com/sha256san/jpcargo/releases/latest/download/jpcargo-aarch64-unknown-linux-gnu.tar.gz | tar -xz -C ~/.cargo/bin
+
+# macOS Apple Silicon (aarch64 / M1, M2, M3, M4)
 curl -fsSL https://github.com/sha256san/jpcargo/releases/latest/download/jpcargo-aarch64-apple-darwin.tar.gz | tar -xz -C ~/.cargo/bin
+
+# macOS Intel (x86_64)
+curl -fsSL https://github.com/sha256san/jpcargo/releases/latest/download/jpcargo-x86_64-apple-darwin.tar.gz | tar -xz -C ~/.cargo/bin
 ```
 
 ---
