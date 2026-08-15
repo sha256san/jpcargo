@@ -162,7 +162,7 @@ impl TerminalRenderer {
             let num = idx + 1;
             let is_warning = jd.level == "warning";
             let type_str = if is_warning {
-                "警告".yellow().bold()
+                "警告  ".yellow().bold()
             } else {
                 "エラー".bright_red().bold()
             };
@@ -171,9 +171,9 @@ impl TerminalRenderer {
             let code = jd.code.as_str().bright_cyan().bold();
             let title = &jd.title;
 
-            // ユーザー指定のフォーマット: 1|src/main.rs:19:5|エラー|E0502|タイトル
+            // ユーザー指定のフォーマット: 1 | src/main.rs:19:5 | エラー | E0502 | タイトル
             println!(
-                " {:2} | {:<22} | {:<4} | {:<18} | {}",
+                " {:2} | {:<22} | {} | {:<18} | {}",
                 num,
                 loc.underline(),
                 type_str,
