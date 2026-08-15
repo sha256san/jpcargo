@@ -3,6 +3,16 @@
 すべての重要な変更は本ファイルに記録されます。
 フォーマットは [Keep a Changelog](https://keepachangelog.com/ja/1.0.0/) に基づいています。
 
+## [0.3.0] - 2026-08-15
+
+### Added
+- 全518種類のエラーコード（E0001 〜 E0806）および主要 Rust 標準 Lint / 警告（`unused_assignments`, `unused_variables`, `dead_code` 等）の完全網羅日本語診断。
+- 診断結果末尾の番号付きサマリー一覧テーブル表示機能。
+- `jpcargo update` によるワンコマンド自動自己アップデート。
+- Apple Silicon (macOS aarch64) および Linux ARM64 (aarch64) への完全対応と GitHub Actions 自動リリース。
+- 1 秒高速インストーラー (`install.sh`) の提供。
+- クリーンかつ直感的な文字ベースUI（`[v]`, `[x]`, `[!]`）。
+
 ---
 
 ## [0.2.0] - 2026-08-15
