@@ -73,31 +73,26 @@ impl TerminalRenderer {
             }
         }
 
-        // quietモードでなければ修正方法・ヒントを表示
+        // quietモードでなければ修正例を表示
         if !self.quiet {
-            // 専門家向けの技術的補足
-            if let Some(expert) = &jd.expert_note {
-                println!("{}", "【言語仕様・内部制約】".bold().bright_cyan());
-                for line in expert.lines() {
-                    println!("  {}", line);
-                }
-                println!();
-            }
+            let has_diff = jd.example_diff.is_some();
+            let has_solution = !jd.solution.is_empty();
 
-            // 修正方法
-            if !jd.solution.is_empty() {
-                println!("{}", "【修正方法】".bold().bright_yellow());
-                for line in jd.solution.lines() {
-                    println!("  {}", line.bright_green());
-                }
-                println!();
-            }
-
-            // 修正例 Diff
-            if let Some((before, after)) = &jd.example_diff {
+            if has_diff || has_solution {
                 println!("{}", "【修正例】".bold().bright_yellow());
-                println!("  {} {}", "-".red().bold(), before.red());
-                println!("  {} {}", "+".green().bold(), after.green());
+
+                // 修正例 Diff
+                if let Some((before, after)) = &jd.example_diff {
+                    println!("  {} {}", "-".red().bold(), before.red());
+                    println!("  {} {}", "+".green().bold(), after.green());
+                }
+
+                // 一言解説
+                if has_solution {
+                    for line in jd.solution.lines() {
+                        println!("  {}", line.bright_green());
+                    }
+                }
                 println!();
             }
         }

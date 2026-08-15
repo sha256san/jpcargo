@@ -75,8 +75,7 @@ fn main() {
         Commands::Search { query } => {
             let results = ExplanationService::search(&query);
             println!(
-                "\n{} 「{}」の検索結果: {} 件\n",
-                "🔍".bold(),
+                "\n「{}」の検索結果: {} 件\n",
                 query.bright_yellow(),
                 results.len().to_string().bold()
             );
